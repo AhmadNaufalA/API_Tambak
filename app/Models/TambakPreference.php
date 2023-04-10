@@ -26,7 +26,7 @@ class TambakPreference extends Model
         'pH',
         'Suhu',
         'Salinitas',
-        'Ketinggian',
+        //'Ketinggian',
         'Oksigen',
         'Kekeruhan',
     ];

@@ -18,20 +18,20 @@ class KualitasAir extends Model
      *
      * @var array<int, string>
      */
-    protected $table = "kualitas_air";
+    protected $table = "kualitas_air_old";
     public $timestamps = false;
     protected $fillable = [
         'id_tambak',
         'waktu',
         'pH',
         'Suhu',
-        'Salinitas',
-        'Ketinggian',
+        'TDS',
+        //'Ketinggian',
         'Oksigen',
         'Kekeruhan',
     ];
 
-    // public function tambak() {
-    //     return $this->belongsTo(Tambak::class, 'id_tambak', 'id');
-    // }
+// public function tambak() {
+//     return $this->belongsTo(Tambak::class, 'id_tambak', 'id');
+// }
 }

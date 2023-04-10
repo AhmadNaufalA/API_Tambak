@@ -53,21 +53,21 @@ class KualitasAirController extends Controller
 
         $tambak = Tambak::find($request->id_tambak);
         $checkers = [
-            'pH' => [6.5, 9.5],
-            'TDS' => [1000, 3000],
-            'Suhu' => [28, 33],
-            //'Ketinggian' => [25, 40],
-            'Oksigen' => [4, 8.5],
-            'Kekeruhan' => [0, 30],
+            'pH' => [7, 9],
+            'TDS' => [15, 25],
+            'Suhu' => [26, 30],
+            'Ketinggian' => [25, 40],
+            'Oksigen' => [4, 8],
+            'Kekeruhan' => [25, 40],
         ];
 
         $margin = [
-            'pH' => 4,
-            'TDS' => 2000,
-            'Suhu' => 6,
-            //'Ketinggian' => 20,
+            'pH' => 5,
+            'TDS' => 20,
+            'Suhu' => 20,
+            'Ketinggian' => 20,
             'Oksigen' => 5,
-            'Kekeruhan' => 31,
+            'Kekeruhan' => 20,
         ];
 
         $badCheck = [];
@@ -106,22 +106,22 @@ class KualitasAirController extends Controller
 
                         switch ($bad) {
                             case 'pH':
-                                $isi = "Pada Tambak " . $tambak->name . ", jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             case 'TDS':
-                                $isi = "Pada Tambak " . $tambak->name . ", jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             case 'Suhu':
-                                $isi = "Pada Tambak " . $tambak->name . ", jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             case 'Oksigen':
-                                $isi = "Pada Tambak " . $tambak->name . ", jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
-                            // case 'Ketinggian':
-                            //   $isi = "Pada Tambak " . $tambak->name . ", jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
-                            // break;
+                            case 'Ketinggian':
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                break;
                             case 'Kekeruhan':
-                                $isi = "Pada Tambak " . $tambak->name . ", jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             default:
                                 break;
@@ -185,22 +185,22 @@ class KualitasAirController extends Controller
 
                         switch ($bad) {
                             case 'pH':
-                                $isi = "Sensor " . $bad . "pada tambak " . $tambak->name . " kemungkinan rusak karena fluktuatif";
+                                $isi = "Sensor " . $bad . " kemungkinan " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             case 'TDS':
-                                $isi = "Sensor " . $bad . "pada tambak " . $tambak->name . " kemungkinan rusak karena fluktuatif";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             case 'Suhu':
-                                $isi = "Sensor " . $bad . "pada tambak " . $tambak->name . " kemungkinan rusak karena fluktuatif";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             case 'Oksigen':
-                                $isi = "Sensor " . $bad . "pada tambak " . $tambak->name . " kemungkinan rusak karena fluktuatif";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
-                            // case 'Ketinggian':
-                            //     $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
-                            //     break;
+                            case 'Ketinggian':
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
+                                break;
                             case 'Kekeruhan':
-                                $isi = "Sensor " . $bad . "pada tambak " . $tambak->name . " kemungkinan rusak karena fluktuatif";
+                                $isi = "Jika " . $bad . " kurang dari " . $checkers[$bad][0] . " maka perlu diberikan..., apabila lebih dari " . $checkers[$bad][1] . " perlu diberi ...";
                                 break;
                             default:
                                 break;

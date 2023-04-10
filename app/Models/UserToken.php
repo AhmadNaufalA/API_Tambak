@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
-class Tambak extends Model
+class UserToken extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -19,26 +19,11 @@ class Tambak extends Model
      *
      * @var array<int, string>
      */
-    protected $table = "tambak";
-    public $timestamps = false;
+    protected $table = "user_token";
+    public $timestamps = true;
     protected $fillable = [
-        'name',
-        'desc',
-        'pH',
-        'Suhu',
-        'TDS',
-        //'Ketinggian',
-        'Oksigen',
-        'Kekeruhan',
-        'id_user'
+        'user_id',
+        'token',
+        'expired_date',
     ];
-
-    public function users()
-    {
-        return $this->belongsTo(User::class);
-    }
-// public function kualitasAirs()
-// {
-//     return $this->hasMany(KualitasAir::class, "id", "id_tambak");
-// }
 }

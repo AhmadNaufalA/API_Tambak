@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use App\Models\Tambak;
 use App\Models\KualitasAir;
 
@@ -19,65 +20,100 @@ use Kreait\Firebase\Messaging\Notification;
 
 class TambakController extends Controller
 {
-    public function userOwned($id) {
+
+    private function failed()
+    {
+        return response()->json(["messageHandler" => "Invalid token"], 400);
+    }
+    public function idList($user_id, Request $request)
+    {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
+        $tambak = Tambak::select('id')->where('id_user', $user_id)->get();
+
+        return response()->json([
+            "success" => true,
+            "messageHandler" => "KualitasAir List By User",
+            "data" => ($tambak)
+        ]);
+    }
+    public function userOwned($id, Request $request)
+    {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         $tambak = Tambak::where('id_user', $id)->orderBy('id', 'desc')->get();
 
         foreach ($tambak as $key => $value) {
             $badCheck = false;
             $kualitasAir = KualitasAir::where('id_tambak', $value->id)->orderBy('waktu', 'desc')->first();
 
-            if($kualitasAir != null){
-            $checkers = [
-                'pH' => [7, 9],
-                'Salinitas' => [15, 25],
-                'Suhu' => [26, 30],
-                'Ketinggian' => [25, 40],
-                'Oksigen' => [4, 8],
-                'Kekeruhan' => [25, 40],
-            ];
-            foreach ($checkers as $checkerKey => $value) {
-                if ($kualitasAir->{$checkerKey} < $value[0] || $kualitasAir->{$checkerKey} > $value[1]) {
-                    $badCheck = true;
-                    break;
+            if ($kualitasAir != null) {
+                $checkers = [
+                    'pH' => [7, 9],
+                    'TDS' => [15, 25],
+                    'Suhu' => [26, 30],
+                    //'Ketinggian' => [25, 40],
+                    'Oksigen' => [4, 8],
+                    'Kekeruhan' => [25, 40],
+                ];
+                foreach ($checkers as $checkerKey => $value) {
+
+                    if ($tambak[$key]->{$checkerKey} == 1 && $kualitasAir->{$checkerKey} < $value[0] || $kualitasAir->{$checkerKey} > $value[1]) {
+                        $badCheck = true;
+                        break;
+                    }
                 }
-            }}
+            } else {
+                $badCheck = true;
+            }
 
             $tambak[$key]->status = $badCheck;
         }
 
         return response()->json([
             "success" => true,
-            "message" => "KualitasAir List By User",
+            "messageHandler" => "KualitasAir List By User",
             "data" => ($tambak)
         ]);
     }
-    public function index()
+    public function index(Request $request)
     {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         $tambak = Tambak::orderBy('id', 'desc')->get();
 
         return response()->json([
             "success" => true,
-            "message" => "KualitasAir List",
+            "messageHandler" => "KualitasAir List",
             "data" => ($tambak)
         ]);
     }
     public function store(Request $request)
     {
-        try{
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
+        try {
 
             $input = $request->all();
             $tambak = Tambak::create($input);
-            
-            return response()->json(["success" => true, "message" => "Tambak created successfully.", "data" => $tambak]);
-        }catch(QueryException $e){
-            if($e->getCode() == 23000){
-                return response()->json(["message" => "User ID tidak ditemukan, mohon login ulang"], 401);
+
+            return response()->json(["success" => true, "messageHandler" => "Tambak created successfully.", "data" => $tambak]);
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return response()->json(["messageHandler" => "User ID tidak ditemukan, mohon login ulang"], 401);
             }
         }
     }
 
     public function show($id, Request $request)
     {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         $product = Tambak::find($id);
         if (is_null($product)) {
             return $this->sendError('Tambak not found.');
@@ -87,31 +123,34 @@ class TambakController extends Controller
 
         $date = date($request->query('date'));
 
-        if($request->query('date') == null){
+        if ($request->query('date') == null) {
             $kualitasAir = KualitasAir::orderBy('waktu', 'desc')->where('id_tambak', $id)->first();
-        }else{
+        } else {
 
             $kualitasAir = KualitasAir::orderBy('waktu', 'desc')->whereDate('waktu', '=', $date)->where('id_tambak', $id)->first();
         }
 
 
-        return response()->json(["success" => true, "message" => "KualitasAir retrieved successfully.", "data" => $product, 'kualitasAir' => $kualitasAir]);
+        return response()->json(["success" => true, "messageHandler" => "KualitasAir retrieved successfully.", "data" => $product, 'kualitasAir' => $kualitasAir]);
     }
 
-    public function update( Request $request, Tambak $tambak)
+    public function update(Request $request, Tambak $tambak)
     {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         $input = $request->all();
-        $tambak->name = $input['name']; 
+        $tambak->name = $input['name'];
         $tambak->desc = $input['desc'];
         $tambak->pH = $input['pH'];
         $tambak->Suhu = $input['Suhu'];
-        $tambak->Salinitas = $input['Salinitas'];
-        $tambak->Ketinggian = $input['Ketinggian'];
+        $tambak->TDS = $input['TDS'];
+        //$tambak->Ketinggian = $input['Ketinggian'];
         $tambak->Oksigen = $input['Oksigen'];
         $tambak->Kekeruhan = $input['Kekeruhan'];
         $tambak->save();
-        return response()->json(["success" => true, "message" => "Tambak updated successfully.", "data" => $tambak]);
-        
+        return response()->json(["success" => true, "messageHandler" => "Tambak updated successfully.", "data" => $tambak]);
+
         // $validator = Validator::make($input, ['name' => 'required', 'detail' => 'required']);
         // if ($validator->fails()) {
         //     return $this->sendError('Validation Error.', $validator->errors());
@@ -128,16 +167,23 @@ class TambakController extends Controller
     //     return response()->json(["success" => true, "message" => "KualitasAir deleted successfully.", "data" => $product]);
     // }
 
-    public function destroy($id) {
+    public function destroy($id, Request $request)
+    {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         $tambak = Tambak::find($id);
 
         $tambak->delete();
 
-        return response()->json(["success" => true, "message" => "Tambak deleted successfully.", "data" => $tambak]); 
+        return response()->json(["success" => true, "messageHandler" => "Tambak deleted successfully.", "data" => $tambak]);
     }
 
     public function between($id, Request $request)
     {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         // $air = KualitasAir::all(['id', 'waktu', 'pH']);
         $from = date($request->query('from'));
         $to = date($request->query('to'));
@@ -147,17 +193,21 @@ class TambakController extends Controller
 
         return response()->json([
             "success" => true,
-            "message" => "KualitasAir List",
+            "messageHandler" => "KualitasAir List",
             "data" => ($air)
         ]);
     }
 
-    public function logs($id) {
+    public function logs($id, Request $request)
+    {
+        // if (!$this->validate_token($request)) {
+        //     return response()->json(["message" => "Invalid token"], 400);
+        // }
         $logs = Log::where('id_tambak', $id)->orderBy('waktu', 'DESC')->get();
 
         return response()->json([
             "success" => true,
-            "message" => "Log list",
+            "messageHandler" => "Log list",
             "data" => ($logs)
         ]);
     }
