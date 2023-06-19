@@ -42,9 +42,9 @@ class KualitasAirController extends Controller
         // }
         $input = $request->all();
 
-
-        $kualitasAir = KualitasAir::create($input);
         $previousKualitasAir = KualitasAir::where("id_tambak", $input['id_tambak'])->orderBy('waktu', 'DESC')->first();
+        $kualitasAir = KualitasAir::create($input);
+        
 
         if ($previousKualitasAir == null)
             return response()->json(["success" => true, "messageHandler" => "KualitasAir created successfully.", "data" => $kualitasAir]);
